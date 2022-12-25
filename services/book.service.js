@@ -5,27 +5,34 @@ const BOOK_KEY = 'bookDB'
 _createBooks()
 
 export const bookService = {
-    query
+    query,
+    get,
+    getDefaultFilter
 }
 
 
 
-// function getEmptyBook(vendor = '', maxSpeed = '') {
-//     return { id: '', vendor, maxSpeed }
-// }
-
-function query() {
+function query(filterBy) {
     return storageService.query(BOOK_KEY)
         .then(books => {
-            // if (filterBy.txt) {
-            //     const regex = new RegExp(filterBy.txt, 'i')
-            //     cars = cars.filter(car => regex.test(car.vendor))
-            // }
-            // if (filterBy.minSpeed) {
-            //     cars = cars.filter(car => car.maxSpeed >= filterBy.minSpeed)
-            // }
+            if (filterBy.txt) {
+                const regex = new RegExp(filterBy.txt, 'i')
+                books = books.filter(book => regex.test(book.title))
+            }
+            if (filterBy.minPrice) {
+                books = books.filter(book => book.listPrice.amount >= filterBy.minPrice)
+            }
             return books
         })
+}
+
+function getDefaultFilter() {
+    return { txt: '', minPrice: '' }
+}
+
+function get(bookId) {
+    return storageService.get(BOOK_KEY, bookId)
+    // return axios.get(CAR_KEY, carId)
 }
 
 function _createBooks() {
